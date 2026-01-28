@@ -1,0 +1,159 @@
+---
+title: "Agent_results"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+library(tidyverse)
+
+# 1. Read data
+df <- read_csv("results_aggregated.csv",
+               col_types = cols())
+
+# 2. Filter by date
+target_dates <- c("20251218_200247", "20251219_033312")
+
+df_filtered <- df |>
+  filter(date %in% target_dates)
+
+# 3. Aggregate by (mode, rag_k)
+df_avg <- df_filtered |>
+  group_by(mode, rag_k) |>
+  summarise(
+    success = mean(success, na.rm = TRUE),
+    success_rate = mean(success_rate, na.rm = TRUE),
+    rag_k = factor(mean(rag_k)),
+    .groups = "drop"
+  )
+```
+
+You can add options to executable code like this
+
+```{r}
+ggplot(df_avg, aes(x = factor(rag_k), y = success_rate, fill = rag_k)) +
+  geom_col(
+    width = 0.7
+  ) +
+  coord_cartesian(ylim = c(0.3, 0.55)) +
+  facet_wrap(~ mode, scales = "fixed") +
+  labs(
+    title = "Effect of RAG Top-k on Success",
+    x = "RAG top-k",
+    y = "Success Rate"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(plot.title = element_text(hjust = .5))
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+library(tidyverse)
+
+# 1. Read data
+df <- read_csv("results_aggregated.csv",
+               col_types = cols())
+
+# 2. Filter target dates
+target_dates <- c("20251218_200247", "20251219_033312")
+
+df_filtered <- df |>
+  filter(date %in% target_dates)
+
+# 3. Aggregate by (mode, rag_k)
+#    Sum error counts across runs
+df_err <- df_filtered |>
+  group_by(mode, rag_k) |>
+  summarise(
+    WA = mean(WA, na.rm = TRUE),
+    TLE = mean(TLE, na.rm = TRUE),
+    COMPLEXITY = mean(COMPLEXITY, na.rm = TRUE),
+    RE = mean(RE, na.rm = TRUE),
+    exception = mean(exception, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# 4. Pivot to long format
+df_err_long <- df_err |>
+  pivot_longer(
+    cols = c(WA, TLE, COMPLEXITY, RE, exception),
+    names_to = "error_type",
+    values_to = "count"
+  )
+
+# 5. Bar plot with facet by (mode, rag_k)
+ggplot(df_err_long, aes(x = error_type, y = count)) +
+  geom_col(
+    fill = "grey60",
+    width = 0.7
+  ) +
+  facet_grid(
+    rows = vars(mode),
+    cols = vars(rag_k),
+    scales = "fixed"
+  ) +
+  labs(
+    title = "Error Type Distribution by Mode and RAG Top-k",
+    x = "Error Type",
+    y = "Error Count"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+```{r}
+#| fig-height: 6.99
+#| fig-width: 10
+
+library(tidyverse)
+
+df_plot <- df_err_long |>
+  mutate(mode_rag = paste0(mode, "_rag", rag_k))
+
+# 1. Calculate the global error counts wrt mode_rag
+mode_rag_totals <- df_plot |>
+  group_by(mode_rag) |>
+  summarise(total_count = sum(count)) |>
+  arrange(desc(total_count)) |>
+  slice_head(n = 6)  # First 6
+
+top_mode_rag <- mode_rag_totals$mode_rag
+
+# 2. Filter and keep the first 6 mode_rag
+df_filtered <- df_plot |>
+  filter(mode_rag %in% top_mode_rag)
+
+# 3. Set factor levels for mode_rag
+df_filtered <- df_filtered |>
+  mutate(mode_rag = factor(mode_rag, levels = top_mode_rag))
+
+# 4. Plot
+ggplot(df_filtered, aes(x = mode_rag, y = count, fill = mode)) +
+  geom_col(width = 0.7) +
+  facet_wrap(~ error_type, scales = "free_y", ncol = 3) +
+  labs(
+    title = "Error Count per Error Type",
+    x = "(Mode, RAG top-k)",
+    y = "Error Count"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = .9),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(hjust = .5, size = 24))
+
+```
+
+
