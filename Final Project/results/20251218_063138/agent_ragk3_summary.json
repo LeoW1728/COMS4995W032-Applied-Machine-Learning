@@ -1,0 +1,26 @@
+{
+  "mode": "agent",
+  "n": 200,
+  "success": 95,
+  "success_rate": 0.475,
+  "gate_rejects": 0,
+  "failure_type_counts": {
+    "WA": 71,
+    "COMPLEXITY": 16,
+    "RE": 11,
+    "exception": 5,
+    "TLE": 2
+  },
+  "avg_success_steps": 1.1473684210526316,
+  "pass_at": 2,
+  "rag_k": 3,
+  "seed": 123,
+  "eval_n": 200,
+  "eval_split": "test",
+  "eval_configs": [
+    "introductory",
+    "interview",
+    "competition"
+  ],
+  "total_runtime_sec": 287.0547478199005
+}
