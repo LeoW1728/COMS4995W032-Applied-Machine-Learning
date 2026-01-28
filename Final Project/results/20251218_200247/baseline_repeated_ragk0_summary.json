@@ -1,0 +1,26 @@
+{
+  "mode": "baseline_repeated",
+  "n": 200,
+  "success": 100,
+  "success_rate": 0.5,
+  "gate_rejects": 0,
+  "failure_type_counts": {
+    "WA": 73,
+    "TLE": 4,
+    "COMPLEXITY": 20,
+    "RE": 2,
+    "exception": 1
+  },
+  "avg_success_steps": 1.17,
+  "pass_at": 3,
+  "rag_k": 0,
+  "seed": 123,
+  "eval_n": 200,
+  "eval_split": "test",
+  "eval_configs": [
+    "introductory",
+    "interview",
+    "competition"
+  ],
+  "total_runtime_sec": 1529.3357360363007
+}
