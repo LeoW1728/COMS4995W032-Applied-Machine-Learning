@@ -1,0 +1,2 @@
+{"problem_id": 0, "question": "Print the sum of two integers provided on one line.", "solutions": "", "input_output": "{\"inputs\":[\"1 2\\n\",\"10 5\\n\"],\"outputs\":[\"3\\n\",\"15\\n\"]}", "difficulty": "easy", "url": "local://sample0", "starter_code": ""}
+{"problem_id": 1, "question": "Given an integer n, output n squared.", "solutions": "", "input_output": "{\"inputs\":[\"3\\n\",\"12\\n\"],\"outputs\":[\"9\\n\",\"144\\n\"]}", "difficulty": "easy", "url": "local://sample1", "starter_code": ""}
